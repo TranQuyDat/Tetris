@@ -5,9 +5,22 @@ using UnityEngine;
 public class TetrisBlockshadow : MonoBehaviour
 {
     public TetrisBlockType blockType;
-    public TetrisBoard tetrisBoard;
     public GameObject block;
+    public int countoftype;
+    
     float rotationAmount = 0;
+    GameObject tetrisBoard_obj;
+    GameObject tetrisSpawner_obj;
+    TetrisBoard tetrisBoard;
+    TetrisSpawner tetrisSpawner;
+    private void Start()
+    {
+        tetrisBoard_obj = GameObject.FindGameObjectWithTag("board");
+        tetrisSpawner_obj = GameObject.FindGameObjectWithTag("spawn");
+        tetrisBoard = tetrisBoard_obj.GetComponent<TetrisBoard>();
+        tetrisSpawner = tetrisSpawner_obj.GetComponent<TetrisSpawner>();
+
+    }
     public bool isvalid()
     {
         foreach (Transform child in transform) 
@@ -21,11 +34,16 @@ public class TetrisBlockshadow : MonoBehaviour
 
     private void OnMouseDown()  
     {
-        block.GetComponent<TetrisBlock>().Move(this.transform.position);
-        foreach (Transform transform in transform)
-        {
-            Debug.Log(transform.name + ":" + transform.position);
+        TetrisBlock tetrisBlock = block.GetComponent<TetrisBlock>();
+        tetrisBlock.Move(this.transform.position);
+        block.transform.rotation = this.transform.rotation;
+        foreach(Transform tran in block.transform)
+        { 
+            tran.rotation = this.transform.GetChild(0).rotation;
         }
+        tetrisBoard.setGridofblock(this.gameObject,1);
+        Destroy(this.gameObject);
+        tetrisSpawner.SpawnNextBlocks();
     }
 
     public void Rotate()
@@ -39,6 +57,15 @@ public class TetrisBlockshadow : MonoBehaviour
         {
             tran.Rotate(Vector3.forward * -90f);
             
+        }
+    }
+
+    public void reload()
+    {
+        transform.Rotate( new Vector3(0,0,0));
+        foreach (Transform tran in transform)
+        {
+            tran.Rotate(new Vector3(0, 0, 0));
         }
     }
 }

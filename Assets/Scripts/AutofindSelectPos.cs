@@ -50,15 +50,17 @@ public class AutofindSelectPos : MonoBehaviour
         return null;
     }
 
+    //spawn shadown block
     public void SpawnRandomBlockShadow(int index)
     {
-        GameObject block = validPositions[index].getBlock(selectBlockBytype());
-        posSpawn.position = block.transform.position;
-  
-            if (!tetrisBoard.iscollidingShadow(block, posSpawn.position))
+        posSpawn.position = validPositions[index].pos;
+        GameObject block = selectBlockBytype();
+        block.transform.position = posSpawn.position;
+        if (!tetrisBoard.iscollidingShadow(block, posSpawn.position))
         {
             cur_blockshadow = Instantiate(block, parent);
 
+           
             tetrisBoard.setGridofblock(cur_blockshadow, 3); // set value cell cua Tetrisboard
             lisSpawned.Add(cur_blockshadow);
             cur_blockshadow.GetComponent<TetrisBlockshadow>().block = this.block;
@@ -81,13 +83,12 @@ public class AutofindSelectPos : MonoBehaviour
     {
         Reload();
         validPositions = tetrisBoard.posvalid(selectBlockBytype());
-
+        Debug.Log(validPositions.Count);
         MaxspawnShpadow = 3 ;
         for (int i = 0; i < MaxspawnShpadow; i++)
         {
             int maxindex = validPositions.Count;
             int random = Random.Range(0, maxindex);
-            Debug.Log("random :" + random);
             if (random != null)
                 SpawnRandomBlockShadow(random);
             

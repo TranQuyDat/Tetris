@@ -3,20 +3,7 @@ using UnityEngine;
 
 public class PosValid
 {
-    GameObject block;
-    public void setBlockvalue(Vector3 positionCopy, Quaternion rotationCopy )
-    {
-        block = new GameObject();
-        block.transform.position = positionCopy;
-        block.transform.rotation = rotationCopy;
-    }
-
-    public GameObject getBlock(GameObject block)
-    {
-        block.transform.position = this.block.transform.position;
-        block.transform.rotation = this.block.transform.rotation;
-        return block;
-    }
+    public Vector2 pos;
 }
 
 
@@ -36,7 +23,10 @@ public class TetrisBoard : MonoBehaviour
     {
         
     }
-   
+    private void Update()
+    {
+       
+    }
     // khoi tao grid
     public void initGridboard()
     {
@@ -57,8 +47,7 @@ public class TetrisBoard : MonoBehaviour
         foreach (Transform transform in shadowblock.transform)
         {
             Vector2 v =( transform.position);
-            Debug.Log(v);
-            if (grid[(int)v.x, (int)v.y] == 3) return true;
+            if (grid[(int)Mathf.Round(v.x), (int)Mathf.Round(v.y)] == 3) return true;
 
         }
         return false;
@@ -69,26 +58,45 @@ public class TetrisBoard : MonoBehaviour
     {
         grid[(int)pos.x, (int)pos.y] = value;
     }
+
     //set gia tri cua cac cell trong grid theo block
     public void setGridofblock(GameObject shadowblock, int value)
     {
-        int yMax = 0;
         int yMin = 16;
-        List<Vector2> listpos = new List<Vector2>();
-        foreach (Transform transform in shadowblock.transform)
-        {
-            Vector2 v = (transform.position);
-            if (v.y <= yMin && value == 0) yMin = (int)v.y;  // tìm y max
-            if (v.y >= yMax && value == 1) yMax = (int)v.y;  // tìm x max
-            grid[(int)v.x, (int)v.y] = value;
-        }
+        
         foreach (Transform transform in shadowblock.transform)
         {
             Vector2 v = round(transform.position);
-            if (v.y == yMin && value == 0) listpos.Add(v); 
-            if (v.y == yMax && value == 1) listpos.Add(new Vector2(v.x,v.y+1)); 
+            v = new Vector2(Mathf.Round(v.x), Mathf.Round(v.y));
+            if (grid[(int)v.x, (int)v.y] == 1) return;
+            if (v.y <= yMin && value == 0) yMin = (int)v.y;  // tìm y min
+            grid[(int)v.x, (int)v.y] = value;
+
+            //================!=3===============
+
+            if ((int)v.y + 1 == 17 || value == 3) return;
+            //nếu mà value =1 thì tim các vị trí phía trên nó để gán = 4 nếu ô đấy trống tức !=1
+            if (grid[(int)v.x, (int)v.y+1] !=1 && value == 1)
+            {
+                grid[(int)v.x, (int)v.y+1] = 4;
+            }
         }
-        for (int i = 0; i < listpos.Count; i++) grid[(int)listpos[i].x, (int)listpos[i].y] = 4; 
+
+        if (value == 3 || value == 1) return;
+        List<Vector2> listpos = new List<Vector2>();
+        
+        // nếu mà value =0 thì tim vị trí thấp nhất để gán lại  =4
+        foreach (Transform transform in shadowblock.transform)
+        {
+            Vector2 v = round(transform.position);
+            v = new Vector2(Mathf.Round(v.x), Mathf.Round(v.y));
+            if (v.y == yMin && value == 0) listpos.Add(v); 
+        }
+
+        for (int i = 0; i < listpos.Count; i++)
+        {
+            grid[(int)listpos[i].x, (int)listpos[i].y] = 4;
+        }
     }
 
 
@@ -96,7 +104,8 @@ public class TetrisBoard : MonoBehaviour
     //check xem cac khoi block co trong grid khong
     public bool checkIsinsideGrid(Vector2 pos)
     {
-        return (pos.x >= 0) && pos.x < width && pos.y >= 0 && pos.y<height;
+        return (Mathf.Round(pos.x) >= 0) && Mathf.Round(pos.x) < width 
+            && Mathf.Round(pos.y) >= 0 && Mathf.Round(pos.y) < height;
     }
 
     // doi don vi 
@@ -105,29 +114,31 @@ public class TetrisBoard : MonoBehaviour
         return new Vector2(pos.x/0.4f, pos.y/0.4f);
     }
 
-    //check xem position co hop le khong
+    //check cac kieu block xem position co hop le khong
+
     public List<PosValid> posvalid(GameObject block)
     {
-        List<PosValid> listPosValid = new List<PosValid>();
-        
-        for (int k = 0; k < 4; k++)
-        {
-            
-            block.GetComponent<TetrisBlockshadow>().Rotate();
-            for (int j = 0; j < height; j++)
+        block.GetComponent<TetrisBlockshadow>().Rotate();
+        return posvalidof(block);
+    }
+
+    //check block xem position co hop le khong
+    public List<PosValid> posvalidof(GameObject block)
+    {
+
+        List<PosValid> newpos = new List<PosValid>();
+        for (int j = 0; j < height; j++)
             {
                 for (int i = 0; i < width; i++)
                 {
                     if (grid[i, j] == 1) { continue; }
                     if (!rule(new Vector2(i, j), block)) { continue; }
-                    PosValid newpos = new PosValid();
-                    newpos.setBlockvalue(new Vector2(i, j), block.transform.rotation);
-                    listPosValid.Add(newpos);
+                PosValid posvalid = new PosValid();
+                posvalid.pos = new Vector2(i, j);
+                newpos.Add(posvalid);
                 }
             }
-        }
-      
-        return listPosValid;
+        return newpos;
     }
 
 
@@ -135,13 +146,16 @@ public class TetrisBoard : MonoBehaviour
     public bool rule(Vector2 posspawn, GameObject block)
     {
         int dem = 0;
+        Debug.Log("posspawn : " + posspawn);
         block.transform.position = posspawn;
+       
         foreach (Transform transform in block.transform)
         {
             Vector2 v = transform.position;
+            Debug.Log("posspawn : " + posspawn+" ,"+transform.name+":"+v);
             if (!checkIsinsideGrid(v)) return false;
-            if (grid[(int)v.x, (int)v.y] == 1) return false;
-            if (grid[(int)v.x, (int)v.y] != 4) continue;
+            if (grid[(int)Mathf.Round(v.x),(int) Mathf.Round(v.y)] == 1) return false;
+            if (grid[(int)Mathf.Round(v.x), (int)Mathf.Round(v.y)] != 4) continue;
             else { dem++; }
         }
         return dem > 0;

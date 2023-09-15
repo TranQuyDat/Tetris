@@ -18,23 +18,16 @@ public class TetrisSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ////demo spawn
-        //if (!Input.GetKeyDown(KeyCode.Mouse0)) return;
-        //blockSpawed.RemoveAt(0);
-        //SpawnNextBlocks();
+       
     }
 
     public void SpawnNextBlocks()
     {
-        for (int i = 0; i < blockstoSpawn; i++)
-        {
-            int random = Random.Range(0, blocks.Length);
-            blockSpawed.Add(blocks[random]);
-        }
+       int random = Random.Range(0, blocks.Length);
        
-        GameObject newBlock = Instantiate(blockSpawed[0], posSpawn.position, Quaternion.identity,tranformSpawn);
+        GameObject newBlock = Instantiate(blocks[random], posSpawn.position, Quaternion.identity,tranformSpawn);
         updateBlockChild(newBlock);
-        autofind.checkblockType(blockSpawed[0].GetComponent<TetrisBlock>().blockType);
+        autofind.checkblockType(newBlock.GetComponent<TetrisBlock>().blockType);
         autofind.block = newBlock;
         autofind.spawnBlockShadow();
     }
