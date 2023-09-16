@@ -21,16 +21,7 @@ public class TetrisBlockshadow : MonoBehaviour
         tetrisSpawner = tetrisSpawner_obj.GetComponent<TetrisSpawner>();
 
     }
-    public bool isvalid()
-    {
-        foreach (Transform child in transform) 
-        {
-            Vector2 v = child.position;
-            if (tetrisBoard.checkIsinsideGrid(transform.position) == false) return false;
-            if (tetrisBoard.grid[(int)v.x,(int)v.y] == 1) return false;
-        }
-        return true;
-    }
+    
 
     private void OnMouseDown()  
     {
@@ -41,7 +32,7 @@ public class TetrisBlockshadow : MonoBehaviour
         { 
             tran.rotation = this.transform.GetChild(0).rotation;
         }
-        tetrisBoard.setGridofblock(this.gameObject,1);
+        tetrisBoard.setGridwheninsert(this.gameObject);
         Destroy(this.gameObject);
         tetrisSpawner.SpawnNextBlocks();
     }

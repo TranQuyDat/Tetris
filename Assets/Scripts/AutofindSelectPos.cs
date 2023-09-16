@@ -74,7 +74,7 @@ public class AutofindSelectPos : MonoBehaviour
         if (lisSpawned == null) return;
         foreach(GameObject game in lisSpawned)
         {
-            tetrisBoard.setGridofblock(game, 0);
+            tetrisBoard.setGridwhendelete(game);
             Destroy(game);
         }
         lisSpawned.Clear();

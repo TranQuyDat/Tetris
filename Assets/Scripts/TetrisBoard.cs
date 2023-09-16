@@ -25,7 +25,14 @@ public class TetrisBoard : MonoBehaviour
     }
     private void Update()
     {
-       
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                if(grid[j, i] == 4)
+                Debug.Log("grid[" + j + "," + i + "]:" + grid[j, i]); ;
+            }
+        }
     }
     // khoi tao grid
     public void initGridboard()
@@ -38,7 +45,7 @@ public class TetrisBoard : MonoBehaviour
                 grid[i,j] = 0;
             }
         }
-    } 
+    }
     //check va cham giua 2 shadowBlock
    public bool iscollidingShadow(GameObject shadowblock,Vector2 pos)
     {
@@ -47,7 +54,9 @@ public class TetrisBoard : MonoBehaviour
         foreach (Transform transform in shadowblock.transform)
         {
             Vector2 v =( transform.position);
-            if (grid[(int)Mathf.Round(v.x), (int)Mathf.Round(v.y)] == 3) return true;
+            int x = Mathf.RoundToInt(v.x);
+            int y = Mathf.RoundToInt(v.y);
+            if (grid[x,y] == 3 || grid[x,y] == 1) return true;
 
         }
         return false;
@@ -62,50 +71,59 @@ public class TetrisBoard : MonoBehaviour
     //set gia tri cua cac cell trong grid theo block
     public void setGridofblock(GameObject shadowblock, int value)
     {
-        int yMin = 16;
-        
         foreach (Transform transform in shadowblock.transform)
         {
             Vector2 v = round(transform.position);
-            v = new Vector2(Mathf.Round(v.x), Mathf.Round(v.y));
-            if (grid[(int)v.x, (int)v.y] == 1) return;
-            if (v.y <= yMin && value == 0) yMin = (int)v.y;  // tìm y min
-            grid[(int)v.x, (int)v.y] = value;
+            
+            int x = Mathf.RoundToInt(v.x);
+            int y = Mathf.RoundToInt(v.y);
 
-            //================!=3===============
-
-            if ((int)v.y + 1 == 17 || value == 3) return;
-            //nếu mà value =1 thì tim các vị trí phía trên nó để gán = 4 nếu ô đấy trống tức !=1
-            if (grid[(int)v.x, (int)v.y+1] !=1 && value == 1)
-            {
-                grid[(int)v.x, (int)v.y+1] = 4;
-            }
-        }
-
-        if (value == 3 || value == 1) return;
-        List<Vector2> listpos = new List<Vector2>();
-        
-        // nếu mà value =0 thì tim vị trí thấp nhất để gán lại  =4
-        foreach (Transform transform in shadowblock.transform)
-        {
-            Vector2 v = round(transform.position);
-            v = new Vector2(Mathf.Round(v.x), Mathf.Round(v.y));
-            if (v.y == yMin && value == 0) listpos.Add(v); 
-        }
-
-        for (int i = 0; i < listpos.Count; i++)
-        {
-            grid[(int)listpos[i].x, (int)listpos[i].y] = 4;
+            if (grid[x,y] == 1) return;
+            grid[x,y] = value;
+            
+           
         }
     }
 
+    public void setGridwheninsert(GameObject shadowblock)
+    {
+        foreach (Transform transform in shadowblock.transform)
+        {
+            Vector2 v = round(transform.position);
+            int x = Mathf.RoundToInt(v.x);
+            int y = Mathf.RoundToInt(v.y);
+            grid[x, y] = 1;
+            if (grid[x,y + 1] != 1 && y + 1 !=17) grid[x,y + 1] = 4;
+            Debug.Log("after insert:grif[" + x + "," + y + "] = " + grid[x, y]);
+            
+        }
+    }
 
+    public void setGridwhendelete(GameObject shadowblock)
+    {
+
+        foreach (Transform transform in shadowblock.transform)
+        {
+            Vector2 v = round(transform.position);
+            int x = Mathf.RoundToInt(v.x);
+            int y = Mathf.RoundToInt(v.y);
+            
+            if (grid[x,y] == 1) return;
+            grid[x, y] = 0;
+            if (y==0 ||y > 0 && grid[x, y - 1] == 1) grid[x, y] = 4;
+        }
+
+    }
+
+   
 
     //check xem cac khoi block co trong grid khong
     public bool checkIsinsideGrid(Vector2 pos)
     {
-        return (Mathf.Round(pos.x) >= 0) && Mathf.Round(pos.x) < width 
-            && Mathf.Round(pos.y) >= 0 && Mathf.Round(pos.y) < height;
+        int x = Mathf.RoundToInt(pos.x);
+        int y = Mathf.RoundToInt(pos.y);
+        return (x >= 0) && x < width 
+            && y >= 0 && y < height;
     }
 
     // doi don vi 
@@ -146,16 +164,17 @@ public class TetrisBoard : MonoBehaviour
     public bool rule(Vector2 posspawn, GameObject block)
     {
         int dem = 0;
-        Debug.Log("posspawn : " + posspawn);
         block.transform.position = posspawn;
        
         foreach (Transform transform in block.transform)
         {
             Vector2 v = transform.position;
-            Debug.Log("posspawn : " + posspawn+" ,"+transform.name+":"+v);
+            int x = Mathf.RoundToInt(v.x);
+            int y = Mathf.RoundToInt(v.y);
+
             if (!checkIsinsideGrid(v)) return false;
-            if (grid[(int)Mathf.Round(v.x),(int) Mathf.Round(v.y)] == 1) return false;
-            if (grid[(int)Mathf.Round(v.x), (int)Mathf.Round(v.y)] != 4) continue;
+            if (grid[x,y] == 1) return false;
+            if (grid[x,y] != 4) continue;
             else { dem++; }
         }
         return dem > 0;
