@@ -230,7 +230,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 5.05
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -564,7 +564,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -224.79993, y: -183.19995}
+  m_AnchoredPosition: {x: -224.80078, y: -183.20312}
   m_SizeDelta: {x: -449.6, y: -730.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1278091913
@@ -621,7 +621,7 @@ GameObject:
   m_Layer: 0
   m_Name: TetrisBoard
   m_TagString: board
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -647,7 +647,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1937256464}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.019935608}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

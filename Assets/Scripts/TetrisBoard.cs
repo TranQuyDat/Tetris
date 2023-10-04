@@ -12,28 +12,62 @@ public class TetrisBoard : MonoBehaviour
     public int width = 7;
     public int height = 17;
 
-    public int[,] grid  ; 
+    public int[,] grid  ;
 
     private void Awake()
     {
         grid = new int[width, height];
         initGridboard();
     }
-    void Start()
-    {
-        
-    }
+  
     private void Update()
+    {     
+    }
+    
+    public bool checkEmptyValid(int x , int y)
     {
-        for (int i = 0; i < height; i++)
+        if (grid[x, y] == 1) return true;
+        int d = 0;
+        int curY = -2;
+        int maxj = 1;
+        for (int i = -1; i <= 1; i++)
         {
-            for (int j = 0; j < width; j++)
+            for(int j = -1;j<= maxj; j++)
             {
-                if(grid[j, i] == 4)
-                Debug.Log("grid[" + j + "," + i + "]:" + grid[j, i]); ;
+                if (d > 1) return false;
+                if (i == 1) maxj = 0;
+                if (i == 0 && j == 0) continue;
+                if (grid[x+i,y+j] == 1 && 
+                   ( (curY < y+j && j!=0) || (curY <= y+j && j == 0) ))
+                {
+                    curY = y + j;
+                    d++;
+                    i += 1;
+                    j = -2;
+                }
             }
         }
+        return true;
     }
+    //
+   /* public void setvalueEmt_notvalid(int x, int y)
+    {
+        for (int i = y-1; i >= 0; i--)
+        {
+            for(int j  = 0; j < height; j++)
+            {
+                if (grid[x + j, i] == 1 && grid[x - j, i] == 1)
+                {
+
+                }
+                if ()
+                {
+
+                }
+            }
+        }
+    }*/
+
     // khoi tao grid
     public void initGridboard()
     {
@@ -93,7 +127,7 @@ public class TetrisBoard : MonoBehaviour
             int x = Mathf.RoundToInt(v.x);
             int y = Mathf.RoundToInt(v.y);
             grid[x, y] = 1;
-            if (grid[x,y + 1] != 1 && y + 1 !=17) grid[x,y + 1] = 4;
+            if (y + 1 != 17 && grid[x,y + 1] != 1 ) grid[x,y + 1] = 4;
             Debug.Log("after insert:grif[" + x + "," + y + "] = " + grid[x, y]);
             
         }
@@ -178,6 +212,22 @@ public class TetrisBoard : MonoBehaviour
             else { dem++; }
         }
         return dem > 0;
+    }
+
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.white;
+        for(int i = 0; i <=width; i++)
+        {
+            Gizmos.DrawLine(new Vector3(i*0.4f, -1 * 0.4f, 0), new Vector3(i*0.4f, 16 * 0.4f, 0));
+        }
+        
+        for(int i = -1; i < height; i++)
+        {
+            Gizmos.DrawLine(new Vector3(0, i * 0.4f, 0), new Vector3(7*0.4f, i * 0.4f, 0));
+        }
+        
     }
 
 }
