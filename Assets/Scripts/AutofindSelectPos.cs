@@ -83,7 +83,7 @@ public class AutofindSelectPos : MonoBehaviour
     {
         Reload();
         validPositions = tetrisBoard.posvalid(selectBlockBytype());
-        Debug.Log(validPositions.Count);
+        //Debug.Log(validPositions.Count);
         MaxspawnShpadow = 3 ;
         for (int i = 0; i < MaxspawnShpadow; i++)
         {

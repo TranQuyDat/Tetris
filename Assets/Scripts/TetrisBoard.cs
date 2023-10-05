@@ -26,47 +26,64 @@ public class TetrisBoard : MonoBehaviour
     
     public bool checkEmptyValid(int x , int y)
     {
-        if (grid[x, y] == 1) return true;
-        int d = 0;
-        int curY = -2;
-        int maxj = 1;
-        for (int i = -1; i <= 1; i++)
+        if (grid[x, y] == 1 || x == 0 || y == 0 || 
+            x == width-1 || y == height-1) return true;
+        int p1, p2, p3, p4, p5, p6, p7, p8;
+        p1 = grid[x - 1, y + 1];
+        p2 = grid[x - 1, y];
+        p3 = grid[x - 1, y - 1];
+        
+        p4 = grid[x + 1, y - 1];
+        p5 = grid[x + 1, y ];
+        p6 = grid[x + 1, y + 1];
+
+        p7 = grid[x, y + 1];
+        p8 = grid[x, y - 1];
+
+        if ( (p1==1 && p4==1)||(p2==1 && p5==1)||(p3==1 && p6 == 1) ) 
         {
-            for(int j = -1;j<= maxj; j++)
-            {
-                if (d > 1) return false;
-                if (i == 1) maxj = 0;
-                if (i == 0 && j == 0) continue;
-                if (grid[x+i,y+j] == 1 && 
-                   ( (curY < y+j && j!=0) || (curY <= y+j && j == 0) ))
-                {
-                    curY = y + j;
-                    d++;
-                    i += 1;
-                    j = -2;
-                }
-            }
+            return false;
         }
+        
+        if (p7 == 1 && p8 == 1) return false;
+        
+        
         return true;
     }
     //
-   /* public void setvalueEmt_notvalid(int x, int y)
+    public List<Vector2> getgridEmt_notvalid(int x, int y)
     {
-        for (int i = y-1; i >= 0; i--)
+
+        List<Vector2> lispos = new List<Vector2>();
+        int d = 0;
+        for (int i = 0; i < width; i++)
         {
-            for(int j  = 0; j < height; j++)
+            if (d >= 2 || y == -1  ) break;
+            if (x + i == width - 1 ) { d++; }
+            if (grid[x + i, y] == 4 && x < width) lispos.Add(new Vector2Int(x + i, y));
+            if (grid[x + i, y] == 1 || x == width - 1)
             {
-                if (grid[x + j, i] == 1 && grid[x - j, i] == 1)
-                {
+                
+                y--;
+                i = -1;
+            }
 
-                }
-                if ()
-                {
-
-                }
+        }
+        
+        for (int i = 0; i < width; i++)
+        {
+            if (d >= 2 || y == -1) break;
+            if ( x - i == 0) { d++; }
+            if (grid[x - i, y] == 4 && x > 0) lispos.Add(new Vector2Int(x - i, y));
+            if (grid[x - i, y] == 1 || x == 0)
+            {
+                y--;
+                i = -1;
             }
         }
-    }*/
+
+        return lispos;
+    }
 
     // khoi tao grid
     public void initGridboard()
@@ -94,9 +111,17 @@ public class TetrisBoard : MonoBehaviour
 
         }
         return false;
-    } 
-
-   //set grid value
+    }
+    //set list posGrid value
+    public void setListGrid(List<Vector2> Listpos, int value)
+    {
+        foreach (Vector2 v in Listpos)
+        {
+            Debug.Log("lispost : " + Mathf.RoundToInt(v.x) + "," + Mathf.RoundToInt(v.y));
+            grid[Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y)] = value;
+        }
+    }
+    //set grid value
     public void setGrid(Vector2 pos,int value)
     {
         grid[(int)pos.x, (int)pos.y] = value;
@@ -128,7 +153,7 @@ public class TetrisBoard : MonoBehaviour
             int y = Mathf.RoundToInt(v.y);
             grid[x, y] = 1;
             if (y + 1 != 17 && grid[x,y + 1] != 1 ) grid[x,y + 1] = 4;
-            Debug.Log("after insert:grif[" + x + "," + y + "] = " + grid[x, y]);
+            //Debug.Log("after insert:grif[" + x + "," + y + "] = " + grid[x, y]);
             
         }
     }
@@ -184,10 +209,14 @@ public class TetrisBoard : MonoBehaviour
                 for (int i = 0; i < width; i++)
                 {
                     if (grid[i, j] == 1) { continue; }
+                    if(checkEmptyValid(i,j) == false)
+                    {
+                        setListGrid(getgridEmt_notvalid(i, j),5);
+                    }
                     if (!rule(new Vector2(i, j), block)) { continue; }
-                PosValid posvalid = new PosValid();
-                posvalid.pos = new Vector2(i, j);
-                newpos.Add(posvalid);
+                    PosValid posvalid = new PosValid();
+                    posvalid.pos = new Vector2(i, j);
+                    newpos.Add(posvalid);
                 }
             }
         return newpos;
