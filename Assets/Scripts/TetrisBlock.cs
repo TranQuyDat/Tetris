@@ -40,7 +40,7 @@ public class TetrisBlock : MonoBehaviour
       
     }
     
-        public void Rotate()
+    public void Rotate()
     {
         // Xử lý xoay khối block.
         if (blockType == TetrisBlockType.O) return;//hình vuông không cần xoay

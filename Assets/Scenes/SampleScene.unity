@@ -639,6 +639,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 7
   height: 17
+  spawnPos: {x: 3, y: 16}
 --- !u!4 &1937256466
 Transform:
   m_ObjectHideFlags: 0

@@ -14,77 +14,20 @@ public class TetrisBoard : MonoBehaviour
 
     public int[,] grid  ;
 
+    public Vector2Int spawnPos;
+
     private void Awake()
     {
         grid = new int[width, height];
         initGridboard();
     }
-  
+    private void Start()
+    {
+    }
     private void Update()
     {     
     }
     
-    public bool checkEmptyValid(int x , int y)
-    {
-        if (grid[x, y] == 1 || x == 0 || y == 0 || 
-            x == width-1 || y == height-1) return true;
-        int p1, p2, p3, p4, p5, p6, p7, p8;
-        p1 = grid[x - 1, y + 1];
-        p2 = grid[x - 1, y];
-        p3 = grid[x - 1, y - 1];
-        
-        p4 = grid[x + 1, y - 1];
-        p5 = grid[x + 1, y ];
-        p6 = grid[x + 1, y + 1];
-
-        p7 = grid[x, y + 1];
-        p8 = grid[x, y - 1];
-
-        if ( (p1==1 && p4==1)||(p2==1 && p5==1)||(p3==1 && p6 == 1) ) 
-        {
-            return false;
-        }
-        
-        if (p7 == 1 && p8 == 1) return false;
-        
-        
-        return true;
-    }
-    //
-    public List<Vector2> getgridEmt_notvalid(int x, int y)
-    {
-
-        List<Vector2> lispos = new List<Vector2>();
-        int d = 0;
-        for (int i = 0; i < width; i++)
-        {
-            if (d >= 2 || y == -1  ) break;
-            if (x + i == width - 1 ) { d++; }
-            if (grid[x + i, y] == 4 && x < width) lispos.Add(new Vector2Int(x + i, y));
-            if (grid[x + i, y] == 1 || x == width - 1)
-            {
-                
-                y--;
-                i = -1;
-            }
-
-        }
-        
-        for (int i = 0; i < width; i++)
-        {
-            if (d >= 2 || y == -1) break;
-            if ( x - i == 0) { d++; }
-            if (grid[x - i, y] == 4 && x > 0) lispos.Add(new Vector2Int(x - i, y));
-            if (grid[x - i, y] == 1 || x == 0)
-            {
-                y--;
-                i = -1;
-            }
-        }
-
-        return lispos;
-    }
-
     // khoi tao grid
     public void initGridboard()
     {
@@ -199,26 +142,40 @@ public class TetrisBoard : MonoBehaviour
         return posvalidof(block);
     }
 
+    public void checkemtyValid( Vector2Int pos)
+    {
+        Debug.Log(pos);
+        FindPathway findPathway = new FindPathway(pos, spawnPos, grid);
+        if(findPathway.findpath() == null)
+        {
+            Debug.Log("Null!!");
+        }
+        else
+        {
+            foreach(Vector2Int n in findPathway.findpath())
+            {
+                Debug.Log("grid[" + n.x + "," + n.y + "]");
+            }
+        }
+    }
+
     //check block xem position co hop le khong
     public List<PosValid> posvalidof(GameObject block)
     {
 
         List<PosValid> newpos = new List<PosValid>();
         for (int j = 0; j < height; j++)
+        {
+            for (int i = 0; i < width; i++)
             {
-                for (int i = 0; i < width; i++)
-                {
-                    if (grid[i, j] == 1) { continue; }
-                    if(checkEmptyValid(i,j) == false)
-                    {
-                        setListGrid(getgridEmt_notvalid(i, j),5);
-                    }
-                    if (!rule(new Vector2(i, j), block)) { continue; }
-                    PosValid posvalid = new PosValid();
-                    posvalid.pos = new Vector2(i, j);
-                    newpos.Add(posvalid);
-                }
+                if (grid[i, j] == 1) { continue; }
+                if (!rule(new Vector2(i, j), block)) { continue; }
+                PosValid posvalid = new PosValid();
+                posvalid.pos = new Vector2(i, j);
+                checkemtyValid(new Vector2Int(0,0));
+                newpos.Add(posvalid);
             }
+        }
         return newpos;
     }
 
